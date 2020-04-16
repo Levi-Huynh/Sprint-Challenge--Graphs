@@ -71,7 +71,63 @@ player = Player(world.starting_room)
 
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
-traversal_path = []
+traversal_path = ['n', 's', 'e', 'w']
+visited_rooms = {}
+
+opposites = {"n": "s", "w": "e", "s": "n", "e": "w"}
+
+
+def log_new_room(room, visited_rooms):
+    visited_rooms[room.id] = {}
+    for direction in room.get_exits():
+        visited_rooms[room.id][direction] = '?'
+
+#
+
+
+def bfs(visited_rooms):
+    visited = set()
+    q = Queue()
+    room = player.current_room
+    #print(f"curr room is {room.id}")
+
+   # TAKES CURR_ROOM ID
+   # ADDES IT TO QUEUE
+    q.enqueue([room.id])
+
+    while q.size() > 0:
+        # WHILE QUE ISN'T ZERO
+        # DEQUEU THE FIRST LIST OF ROOM ID'S
+        path = q.dequeue()
+        #print(f"{path} dequeued, path[-1] room is {room}")
+
+        # SET THE LAST ROOM IN OUR ROOM_ID LIST PATH AS OUR VERTEX ROOM
+        room = path[-1]
+
+        # CHECK IF ROOM IS IN OUR BFS VISITED SET
+        if room not in visited:
+            # ADD TO BFS VISTED SET IF NOT IN BFS SET
+            visited.add(room)
+
+            # FOR DURECTIONS ENTRIES OF OUR VERTEX ROOM IN V_R DICT:
+            for direction in visited_rooms[room]:
+
+                # IF THE V_R ENTRY FOR THAT DIRECTION == ?
+                # RETURN THAT ENTIRE PATH OF ROOMS!  ==> THERE ARE ROOMS IN THAT PATH LIST THAT ==? & NEED EXPLORATION!
+                if (visited_rooms[room][direction] == '?'):
+                    # print(
+                    # f"this visited_room {room} {direction} entry == ? NOT explored yet. Path returned")
+                    return path
+
+                # ELSE IF GIVEN THE V_R DICT[CURR_ROOM][GIVEN_DIRECTION](FROM OUR VR DICT) IS NOT IN OUR BFS SET:
+                elif (visited_rooms[room][direction] not in visited):
+                   # CREATE A COPY OF OUR ROOM LIST PATH, & APPEND THE ROOM FROM OUR CURR_ROOM & DIRECTION IN OUR VR DICT
+                   # TO THE QUEUE TO BE EXPLORED & PATH RETURNED TO MAIN LOOP LATER ON
+                    new_path = path + [visited_rooms[room][direction]]
+                    # print(
+                    # f"new path {new_path} which appends the new room direction (which has been explored, not == ?) enqueu")
+                    q.enqueue(new_path)
+    return path
 
 
 # TRAVERSAL TEST
