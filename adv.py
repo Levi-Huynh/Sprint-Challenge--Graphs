@@ -26,7 +26,7 @@ Plan:
     -subdictionary should have all the possible exits as keys & value should be the new rooms conected
     -use a helper 'log_new_room' to do this for us, using 'get_exits' to return possible exits
 
--Create a main while loop that continues but breaks when the len of visited rooms > len of room_graphs
+-Create a main while loop that  breaks when the len of visited rooms > len of room_graphs
     (we only need to visit every room & store that in our visited_room dict)
 -Inside While loop:
     -Check if the current room id is a key in our visited_room dict
@@ -38,16 +38,13 @@ Plan:
             -iterate through the room_ids from our returned path coming from BFS
             -for all the exits in our current room, verify the room_ids in the path exist for curr_room
             -if so append that exit direction to our traversal_path
-            -Log the new room id, as the value for that exit direction in our current room (using get_room_in_direction room class method)
-            -log the new room id as a key, if its not yet logged in our visited_room dict
-            -Log our current room, as the room value for the opposite direction, for our new room key in the visited_rooms dict
-            -travel to the exit direction using player.travel
+           
+                -Log the new room id, using get_room_in_direction 
+                -log the new room id as a key, if its not yet logged in our visited_room dict
+                -Log our current room, as the room value for the opposite direction
+                -travel to the exit direction using player.travel
     -Else if the len of our unexplored exits (room_exits) is > 0 (we have unexplored exits for our current room)
-        -randomly choose an exit from our room_exits (use random.choice)
-        -travel to that randomly choosen exit using player.travel
-        -use helper function `get_room_in_direction` to log the new rooms, for the randomly choosen exit of our curr room
-        -log the new room to visited_rooms dict , and for the opposite direction (randomly chosen exit), log the current_room as the value
-        -travel to our randomly chosen exit
+      -execute our travel & log room entries function on the given direction & room
 """
 
 # Load world
@@ -134,14 +131,15 @@ def bfs(visited_rooms):
                     q.enqueue(copy_path)
     return path
 
+
 # While loop runs if visited_rooms not greater than 500
 while (len(visited_rooms) < len(room_graph)):
 
     if player.current_room.id not in visited_rooms:
         log_new_room(player.current_room, visited_rooms)
 
-    unexplored_exits = []
     # find all the unexplored exits in curr room & store it in list we can randomly choose to travel to
+    unexplored_exits = []
     for exit_dir in visited_rooms[player.current_room.id]:
         if visited_rooms[player.current_room.id][exit_dir] == '?':
             unexplored_exits.append(exit_dir)
@@ -192,4 +190,3 @@ while True:
         break
     else:
         print("I did not understand that command.")
-
