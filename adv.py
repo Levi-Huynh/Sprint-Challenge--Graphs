@@ -38,8 +38,8 @@ Plan:
             -iterate through the room_ids from our returned path coming from BFS
             -for all the exits in our current room, verify the room_ids in the path exist for curr_room
             -if so append that exit direction to our traversal_path
-           
-                -Log the new room id, using get_room_in_direction 
+
+                -Log the new room id, using get_room_in_direction
                 -log the new room id as a key, if its not yet logged in our visited_room dict
                 -Log our current room, as the room value for the opposite direction
                 -travel to the exit direction using player.travel
@@ -116,7 +116,8 @@ def bfs(visited_rooms):
             visited.add(room)
             # For all the keys in our visited_rooms[current_room]
             for direction in visited_rooms[room]:
-                # look for visited_room[room][direction] ==?
+                # look for visited_room[room][direction] == ? (we assume room is already in visited dict, b/c first thing we did in main loop is add it)
+                # our search target
                 if (visited_rooms[room][direction] == '?'):
                     # print(
                     # f"this visited_room {room} {direction} entry == ? NOT explored yet. Path returned")
@@ -144,19 +145,34 @@ while (len(visited_rooms) < len(room_graph)):
         if visited_rooms[player.current_room.id][exit_dir] == '?':
             unexplored_exits.append(exit_dir)
 
-    if len(unexplored_exits) == 0:
+    if len(unexplored_exits) > 0:
+        random_exit = random.choice(unexplored_exits)
+        travel_log_room_entries(random_exit, visited_rooms)
+
+    else:
         path = bfs(visited_rooms)
 
         for unexplored_room in path:
             for direction in visited_rooms[player.current_room.id]:
                 if (direction in visited_rooms[player.current_room.id]):
-                    # if unexplored room from path bfs is connected to our current room:
+                    # if unexplored room from path bfs is connected to our current room, travel there & log entries:
+                    if (visited_rooms[player.current_room.id][direction] == unexplored_room and player.current_room.id != unexplored_room):
+                        travel_log_room_entries(direction, visited_rooms)
+
+
+"""   if len(unexplored_exits) == 0:
+        path = bfs(visited_rooms)
+
+        for unexplored_room in path:
+            for direction in visited_rooms[player.current_room.id]:
+                if (direction in visited_rooms[player.current_room.id]):
+                    # if unexplored room from path bfs is connected to our current room, travel there & log entries:
                     if (visited_rooms[player.current_room.id][direction] == unexplored_room and player.current_room.id != unexplored_room):
                         travel_log_room_entries(direction, visited_rooms)
 
     else:
         random_exit = random.choice(unexplored_exits)
-        travel_log_room_entries(random_exit, visited_rooms)
+        travel_log_room_entries(random_exit, visited_rooms) """
 
 
 #-----------------------------------------------------------------------------------------------------------#
